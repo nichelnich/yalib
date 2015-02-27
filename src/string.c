@@ -4,6 +4,8 @@
 
 #include <string.h>
 #include <wchar.h>
+#include <assert.h>
+#include "ya/string.h"
 
 char *ya_strcpy(char *dest, const char *src, size_t n)
 {
