@@ -1,4 +1,4 @@
-CFLAGS=-I./include -Wall
+CFLAGS=-I./include -Wall -DDEBUG_ASSERT -DDEBUG_MUTEX
 BUILD_DIR=build
 
 sources=$(wildcard src/*.c)

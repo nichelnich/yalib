@@ -7,6 +7,9 @@
 
 #include <ya/string.h>
 #include <ya/util.h>
+#include <ya/list.h>
+#include <ya/log.h>
+#include <ya/object.h>
 
 #endif
 
