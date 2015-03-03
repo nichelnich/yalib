@@ -11,4 +11,11 @@ void ya_debug_assert(int expression);
 #define MY_MUTEX_TRYLOCK(mutex)  my_pthread_mutex_trylock(mutex, __FILE__ __LINE__)
 #define MY_MUTEX_UNLOCK(mutex) my_pthread_mutex_umloc(mutex)
 
+
+typedef int ya_status_t;
+enum {
+	YA_SUCCESS = 0,
+	YA_ERROR,
+};
+
 #endif

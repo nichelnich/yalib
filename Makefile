@@ -1,5 +1,4 @@
 CFLAGS=-I./include -Wall
-VPATH=src
 BUILD_DIR=build
 
 sources=$(wildcard src/*.c)

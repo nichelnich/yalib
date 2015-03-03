@@ -1,49 +1,30 @@
 /*
- * Copyright (C), 2010-2013, ATCOM Tech. Co., Ltd.
- * File Name: object.h
- * Author: hyh
- * Email: hyf@atcom.com.cn 
- * Created: Sun 12 May 2013 07:32:57 AM CST
+ * brief
  */
 
-/**
- * @file object.h
- * @brief OO的基础.
- *
- * 用C实现OO的基础
- */
+#ifndef __OBJECT_H__
+#define __OBJECT_H__
 
-#ifndef OBJECT_H
-#define OBJECT_H
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
+typedef void dtor_type(void *obj);
+typedef void *ctor_type(void *obj, dtor_type *dtor, va_list *ap);
 
-/**
- * 获取object抽象数据类型\n
- *
- * new(object());
- */
-const void *const object(void);
+#define CLASS_MAX_NAME_LEN	64
 
-void *new(const void *class, ...);
-void delete(void *self);
+struct BASE_CLASS_OBJECT {
+	ya_list_node_t list_node;
+	dtor_type *dtor;
+	int ref;
+	char class_name[CLASS_MAX_NAME_LEN];
+};
 
-const void *class_of(const void *self);
-size_t size_of(const void *self);
+#define CLASS_ATTR_DATE void *private; \
+		dtor_type *dtor;
 
-void *ctor(void *self, va_list *app);
-void *dtor(void *self);
+void *new(const char *name, size_t size, ctor_type ctor, dtor_type dtor, ...);
+void *base_class_ctor(void *obj, ctor_type ctor, dtor_type dtor, ...);
+void ref_obj(void *obj);
+void unref_obj(void *obj);
 
-/**
- * 获取class抽象数据类型\n
- *
- * new(class(), "name", super, size, sel, method, ...0);
- */
-const void *const class(void);
 
-/** 获取class的基类 */
-const void *super(const void *self);
-
-#endif /* ifndef OBJECT_H */
+#endif
