@@ -12,7 +12,7 @@ typedef void *ctor_type(void *obj, dtor_type *dtor, va_list *ap);
 #define CLASS_MAX_NAME_LEN	64
 
 struct BASE_CLASS_OBJECT {
-	ya_list_node_t list_node;
+	ya_list_t list_node;
 	dtor_type *dtor;
 	int ref;
 	char class_name[CLASS_MAX_NAME_LEN];
