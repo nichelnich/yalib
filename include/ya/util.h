@@ -18,4 +18,7 @@ enum {
 	YA_ERROR,
 };
 
+/** Boolean. */
+typedef int		ya_bool_t;
+
 #endif
