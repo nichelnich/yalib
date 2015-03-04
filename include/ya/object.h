@@ -19,12 +19,12 @@ struct BASE_CLASS_OBJECT {
 };
 
 #define CLASS_ATTR_DATE void *private; \
-		dtor_type *dtor;
+		dtor_type *dtor
 
 void *new(const char *name, size_t size, ctor_type ctor, dtor_type dtor, ...);
 void *base_class_ctor(void *obj, ctor_type ctor, dtor_type dtor, ...);
 void ref_obj(void *obj);
 void unref_obj(void *obj);
-
+struct BASE_CLASS_OBJECT *class(void *obj);
 
 #endif

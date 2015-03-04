@@ -68,8 +68,17 @@ void ref_obj(void *obj)
 void unref_obj(void *obj)
 {
 	struct BASE_CLASS_OBJECT *class_obj = (struct BASE_CLASS_OBJECT *)obj;
+
+	if(!obj) {
+		return ;
+	}
 	class_obj->ref --;
 	if(class_obj->ref <= 0) {
 		delete(obj);
 	}
+}
+
+struct BASE_CLASS_OBJECT *class(void *obj)
+{
+	return (struct BASE_CLASS_OBJECT *)obj;
 }

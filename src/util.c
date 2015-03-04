@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <pthread.h>
+#include <time.h>
 #include "ya/log.h"
+#include "ya/util.h"
 
 /**
  * @brief just use for debug, where associated with process should call assert(2),because crash more safe.
@@ -66,5 +68,16 @@ int ya_pthread_mutex_unlock(pthread_mutex_t *mutex)
 	return ret;
 }
 
+ya_status_t ya_gettickcount(ya_time_val *tv)
+{
+	struct timespec tp;
 
+	if (clock_gettime(CLOCK_MONOTONIC, &tp) != 0) {
+		return YA_ERROR;
+	}
+
+	tv->sec = tp.tv_sec;
+	tv->msec = tp.tv_nsec / 1000000;
+    return YA_SUCCESS;
+}
 

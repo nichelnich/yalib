@@ -18,7 +18,17 @@ enum {
 	YA_ERROR,
 };
 
+typedef struct ya_time_val
+{
+    /** seconds */
+    long    sec;
+    /** milliseconds */
+    long    msec;
+} ya_time_val;
+
 /** Boolean. */
 typedef int		ya_bool_t;
+
+ya_status_t ya_gettickcount(ya_time_val *tv);
 
 #endif

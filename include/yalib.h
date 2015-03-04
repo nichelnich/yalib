@@ -10,6 +10,7 @@
 #include <ya/list.h>
 #include <ya/log.h>
 #include <ya/object.h>
+#include <ya/timer.h>
 
 #endif
 

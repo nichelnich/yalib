@@ -14,6 +14,11 @@ int ya_list_empty(const void *node)
     return ((ya_list_t*)node)->next == node;
 }
 
+int ya_list_original(const void *node)
+{
+	return ((ya_list_t*)node)->next == node && ((ya_list_t*)node)->prev == node;
+}
+
 static void ya_link_node(void *prev, void *next)
 {
     ((ya_list_t*)prev)->next = next;

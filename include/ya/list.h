@@ -12,6 +12,7 @@ typedef struct {
 
 void ya_list_init(void *node);
 int ya_list_empty(const void *node);
+int ya_list_original(const void *node);
 int ya_list_size(const void *list);
 void ya_list_erase(void *node);
 void * ya_list_search(void *list, void *value,
