@@ -32,4 +32,10 @@ typedef struct _ya_timer_entry{
 
 typedef void ya_timer_heap_callback(ya_timer_entry_t *entry);
 
+
+void *ya_timer_heap_ctor(void *obj, dtor_type *dtor, va_list *ap);
+void ya_timer_heap_dtor(void *obj);
+void *ya_timer_entry_ctor(void *obj, dtor_type *dtor, va_list *ap);
+void ya_timer_entry_dtor(void *obj);
+
 #endif

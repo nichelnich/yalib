@@ -25,7 +25,9 @@ void *new(const char *name, size_t size, ctor_type ctor, dtor_type dtor, ...)
 	ya_list_init(obj);
 	obj->dtor = dtor;
 	ref_obj(obj);
-	ya_strcpy(obj->class_name, name, sizeof(obj->class_name));
+	if(name) {
+		ya_strcpy(obj->class_name, name, sizeof(obj->class_name));
+	}
 
 	va_start(ap, dtor);
 	ret = ctor(obj, dtor, &ap);

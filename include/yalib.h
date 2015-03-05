@@ -11,6 +11,7 @@
 #include <ya/log.h>
 #include <ya/object.h>
 #include <ya/timer.h>
+#include <ya/mainloop.h>
 
 #endif
 

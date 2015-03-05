@@ -81,6 +81,7 @@ static unsigned ya_timer_heap_poll (void *this)
 		if (HEAP_PRIVATE(this)->mutex) {
 			YA_MUTEX_LOCK(HEAP_PRIVATE(this)->mutex);
 		}
+		++ count;
 	}
 
 	if (HEAP_PRIVATE(this)->mutex) {
@@ -191,7 +192,7 @@ void *ya_timer_heap_ctor(void *obj, dtor_type *dtor, va_list *ap)
 
 	//private
 	_max_entries = va_arg(*ap, unsigned int);
-	if(_max_entries < MAX_ENTRIES_PER_HEAP) {
+	if(_max_entries < MAX_ENTRIES_PER_HEAP && _max_entries > 0) {
 		HEAP_PRIVATE(obj)->max_entries = _max_entries;
 	}else {
 		HEAP_PRIVATE(obj)->max_entries = MAX_ENTRIES_PER_HEAP;
