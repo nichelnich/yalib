@@ -33,8 +33,6 @@ struct ya_timer_heap_private
 
     /** heap */
     ya_timer_entry_t entrys;
-
-    unsigned char timer_ids[MAX_ENTRIES_PER_HEAP % 8 == 0 ? (MAX_ENTRIES_PER_HEAP/8) : (MAX_ENTRIES_PER_HEAP/8 + 1)];
 };
 
 
@@ -45,31 +43,132 @@ struct ya_timer_heap_private
 static void ya_timer_heap_set_lock (void *_this, pthread_mutex_t *lock, ya_bool_t auto_del)
 {
 	assert(_this);
+
+	if(HEAP_PRIVATE(_this)->mutex && HEAP_PRIVATE(_this)->auto_delete_lock) {
+		pthread_mutex_destroy(HEAP_PRIVATE(_this)->mutex);
+	}
 	HEAP_PRIVATE(_this)->mutex = lock;
 	HEAP_PRIVATE(_this)->auto_delete_lock = auto_del;
 }
 
-static unsigned ya_timer_heap_poll (void *_this, ya_time_val *next_delay)
+static unsigned ya_timer_heap_poll (void *this)
 {
-	ya_timer_heap_t *this = (ya_timer_heap_t *)_this;
+	unsigned count = 0;
+	ya_timer_entry_t *node;
+	ya_time_val expires;
 
-	assert(_this && next_delay);
+	assert(this);
+
+	ya_gettickcount(&expires);
+
+	if (HEAP_PRIVATE(this)->mutex) {
+		YA_MUTEX_LOCK(HEAP_PRIVATE(this)->mutex);
+	}
+
+	while ((node = ya_list_get(&HEAP_PRIVATE(this)->entrys, 0))
+			&& ya_time_val_cmp(&ENTRY_PRIVATE(node)->_timer_value, &expires) <= 0) {
+		ya_list_erase(node);
+		ENTRY_PRIVATE(node)->heap = NULL;
+
+		if (HEAP_PRIVATE(this)->mutex) {
+			YA_MUTEX_UNLOCK(HEAP_PRIVATE(this)->mutex);
+		}
+
+		if(ENTRY_PRIVATE(node)->cb) {
+			ENTRY_PRIVATE(node)->cb(node);
+		}
+
+		if (HEAP_PRIVATE(this)->mutex) {
+			YA_MUTEX_LOCK(HEAP_PRIVATE(this)->mutex);
+		}
+	}
+
+	if (HEAP_PRIVATE(this)->mutex) {
+		YA_MUTEX_UNLOCK(HEAP_PRIVATE(this)->mutex);
+	}
+
+	return count;
 }
 
-static ya_status_t ya_timer_entry_schedule (void *_this, ya_timer_heap_t *heap, const ya_time_val *delay)
+static int bigger(void *value, const void *node)
 {
-	ya_timer_entry_t *this = (ya_timer_entry_t *)_this;
+	ya_time_val *_value = (ya_time_val *)value;
 
-	assert(_this && heap && delay);
+	if(ya_time_val_cmp(&ENTRY_PRIVATE(node)->_timer_value, _value) > 0) {
+		return 0;
+	}
+	return -1;
 }
 
-static int ya_timer_entry_cancel (void *_this)
+static ya_status_t ya_timer_entry_schedule (void *this, ya_timer_heap_t *heap, const ya_time_val *delay)
 {
-	ya_timer_entry_t *this = (ya_timer_entry_t *)_this;
+	ya_time_val expires;
 
-	assert(_this);
+	assert(this && heap && delay);
+
+	ya_gettickcount(&expires);
+	YA_TIME_VAL_ADD(expires, *delay);
+
+	if(HEAP_PRIVATE(heap)->mutex) {
+		YA_MUTEX_LOCK(HEAP_PRIVATE(heap)->mutex);
+	}
+
+	ENTRY_PRIVATE(this)->_timer_value.sec = expires.sec;
+	ENTRY_PRIVATE(this)->_timer_value.msec = expires.msec;
+
+	ENTRY_PRIVATE(this)->heap = heap;
+
+	{
+		ya_timer_entry_t *node = ya_list_search(&HEAP_PRIVATE(heap)->entrys, &expires, bigger);
+		if(node) {
+			ya_list_insert_before(node, this);
+		}else {
+			ya_list_insert_before(&HEAP_PRIVATE(heap)->entrys, this);
+		}
+	}
+
+	if (HEAP_PRIVATE(heap)->mutex) {
+		YA_MUTEX_UNLOCK(HEAP_PRIVATE(heap)->mutex);
+	}
+	return YA_SUCCESS;
 }
 
+static ya_status_t ya_timer_entry_cancel (void *this)
+{
+	assert(this);
+	pthread_mutex_t *_mutex = HEAP_PRIVATE(ENTRY_PRIVATE(this)->heap)->mutex;
+
+	if (_mutex) {
+		YA_MUTEX_LOCK(_mutex);
+	}
+
+	ya_list_erase(this);
+	ENTRY_PRIVATE(this)->heap = NULL;
+
+	if (_mutex) {
+		YA_MUTEX_UNLOCK(_mutex);
+	}
+	return YA_SUCCESS;
+}
+
+static int ya_timer_entry_get_id(void *this)
+{
+	assert(this);
+	return ENTRY_PRIVATE(this)->id;
+}
+
+static void *ya_timer_entry_get_usr_data(void *this)
+{
+	assert(this);
+	return ENTRY_PRIVATE(this)->user_data;
+}
+
+static ya_status_t ya_timer_entry_set_usr_data(void *this, void *usr_data)
+{
+	assert(this);
+	ENTRY_PRIVATE(this)->user_data = usr_data;
+	return YA_SUCCESS;
+}
 
 
 /*=================== heap ctor dtor start =====================*/
@@ -139,6 +238,9 @@ void *ya_timer_entry_ctor(void *obj, dtor_type *dtor, va_list *ap)
 	entry->dtor = dtor;
 	entry->schedule = ya_timer_entry_schedule;
 	entry->cancel = ya_timer_entry_cancel;
+	entry->get_id = ya_timer_entry_get_id;
+	entry->get_usr_data = ya_timer_entry_get_usr_data;
+	entry->set_usr_data = ya_timer_entry_set_usr_data;
 
 	//private
 	ENTRY_PRIVATE(obj)->id = va_arg(*ap, int);

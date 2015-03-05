@@ -76,8 +76,17 @@ void ya_list_insert_after(void *pos, void *node)
     ((ya_list_t*)node)->prev = pos;
     ((ya_list_t*)node)->next = ((ya_list_t*)pos)->next;
     //barrier();
-    ((ya_list_t*) ((ya_list_t*)pos)->next) ->prev = node;
+    ((ya_list_t*) ((ya_list_t*)pos)->next)->prev = node;
     ((ya_list_t*)pos)->next = node;
+}
+
+void ya_list_insert_before(void *pos, void *node)
+{
+    ((ya_list_t*)node)->prev = ((ya_list_t*)pos)->prev;
+    ((ya_list_t*)node)->next = pos;
+    //barrier();
+    ((ya_list_t*) ((ya_list_t*)pos)->prev)->next = node;
+    ((ya_list_t*)pos)->prev = node;
 }
 
 int ya_list_add(void *list, void *node, int pos)
@@ -99,7 +108,7 @@ int ya_list_add(void *list, void *node, int pos)
 		cur_node = (ya_list_t*)cur_node->next;
 	}
 
-	ya_list_insert_after(cur_node->prev, node);
+	ya_list_insert_before(cur_node, node);
 
 	return 0;
 }

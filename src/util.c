@@ -28,11 +28,11 @@ void ya_free(void **ptr)
 }
 
 
-int ya_pthread_mutex_lock(pthread_mutex_t *mutex, char *info)
+int ya_pthread_mutex_lock(pthread_mutex_t *mutex, const char *file, int line)
 {
 	int ret;
 #ifdef DEBUG_MUTEX
-	ya_log(LOG_LEVEL_DEBUG, "LOCK_BEGIN--tid:%d, info:%s", pthread_self(), info);
+	ya_log(LOG_LEVEL_DEBUG, "LOCK_BEGIN--tid:%d, info:%s:%d", pthread_self(), file, line);
 #endif
 	ret = pthread_mutex_lock(mutex);
 #ifdef DEBUG_MUTEX
@@ -41,11 +41,11 @@ int ya_pthread_mutex_lock(pthread_mutex_t *mutex, char *info)
 	return ret;
 }
 
-int ya_pthread_mutex_trylock(pthread_mutex_t *mutex, char *info)
+int ya_pthread_mutex_trylock(pthread_mutex_t *mutex, const char *file, int line)
 {
 	int ret;
 #ifdef DEBUG_MUTEX
-	ya_log(LOG_LEVEL_DEBUG, "TRYLOCK_BEGIN--tid:%d, info:%s", pthread_self(), info);
+	ya_log(LOG_LEVEL_DEBUG, "TRYLOCK_BEGIN--tid:%d, info:%s:%d", pthread_self(), file, line);
 #endif
 	ret = pthread_mutex_trylock(mutex);
 #ifdef DEBUG_MUTEX
@@ -81,3 +81,35 @@ ya_status_t ya_gettickcount(ya_time_val *tv)
     return YA_SUCCESS;
 }
 
+void ya_time_val_normalize(ya_time_val *t)
+{
+	if (t->msec >= 1000) {
+		t->sec += (t->msec / 1000);
+		t->msec = (t->msec % 1000);
+	} else if (t->msec <= -1000) {
+		do {
+			t->sec--;
+			t->msec += 1000;
+		} while (t->msec <= -1000);
+	}
+
+	if (t->sec >= 1 && t->msec < 0) {
+		t->sec--;
+		t->msec += 1000;
+
+	} else if (t->sec < 0 && t->msec > 0) {
+		t->sec++;
+		t->msec -= 1000;
+	}
+}
+
+int ya_time_val_cmp(ya_time_val *t1, ya_time_val *t2)
+{
+	if(t1->msec + t1->sec * 1000 == t2->msec + t2->sec * 1000) {
+		return 0;
+	}else if(t1->msec + t1->sec * 1000 > t2->msec + t2->sec * 1000) {
+		return 1;
+	}else {
+		return -1;
+	}
+}

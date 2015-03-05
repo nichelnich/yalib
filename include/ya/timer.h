@@ -9,8 +9,14 @@ typedef struct _ya_timer_heap{
 	struct BASE_CLASS_OBJECT _;
 	CLASS_ATTR_DATE;
 
-	void (*set_lock) (void *this, pthread_mutex_t *lock, ya_bool_t auto_del);
-	unsigned (*poll) (void *this, ya_time_val *next_delay);
+	void (*set_lock) (void *_this, pthread_mutex_t *lock, ya_bool_t auto_del);
+	/**
+	 * Poll the timer heap, check for expired timers and call the callback for
+	 * each of the expired timers.
+	 *
+	 * @return           The number of timers expired.
+	 */
+	unsigned (*poll) (void *_this);
 }ya_timer_heap_t;
 
 typedef struct _ya_timer_entry{
@@ -18,10 +24,12 @@ typedef struct _ya_timer_entry{
 	CLASS_ATTR_DATE;
 
 	ya_status_t (*schedule) (void *_this, ya_timer_heap_t *heap, const ya_time_val *delay);
-	int (*cancel) (void *_this);
+	ya_status_t (*cancel) (void *_this);
+	int (*get_id) (void *_this);
+	void *(*get_usr_data) (void *_this);
+	ya_status_t (*set_usr_data) (void *_this, void *usr_data);
 }ya_timer_entry_t;
 
-typedef void ya_timer_heap_callback(ya_timer_heap_t *timer_heap,
-		ya_timer_entry_t *entry);
+typedef void ya_timer_heap_callback(ya_timer_entry_t *entry);
 
 #endif

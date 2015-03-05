@@ -19,6 +19,7 @@ void * ya_list_search(void *list, void *value,
 	       		int (*comp)(void *value, const void *node));
 void *ya_list_get(const void *list, int pos);
 void ya_list_insert_after(void *pos, void *node);
+void ya_list_insert_before(void *pos, void *node);
 int ya_list_add(void *list, void *node, int pos);
 
 #endif
