@@ -10,7 +10,7 @@ void timer_cb(ya_timer_entry_t *entry)
 {
 	ya_time_val delay;
 	void *usr_data = entry->get_usr_data(entry);
-	int count = (int)usr_data;
+	unsigned count = (unsigned)usr_data;
 
 	printf("-----call back:%d\n", count);
 
@@ -33,7 +33,7 @@ int main(void)
 	ya_timer_entry_t *entry;
 	ya_time_val delay;
 
-	heap = new("test_timer", sizeof(ya_timer_heap_t), ya_timer_heap_ctor, ya_timer_heap_dtor, -1);
+	heap = new("test_timer", sizeof(ya_timer_heap_t), ya_timer_heap_ctor, ya_timer_heap_dtor, 0);
 	if(!heap) {
 		printf("new heap error\n");
 		return -1;

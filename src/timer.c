@@ -246,7 +246,7 @@ void *ya_timer_entry_ctor(void *obj, dtor_type *dtor, va_list *ap)
 	//private
 	ENTRY_PRIVATE(obj)->id = va_arg(*ap, int);
 	ENTRY_PRIVATE(obj)->user_data = va_arg(*ap, void *);
-	ENTRY_PRIVATE(obj)->cb = va_arg(*ap, ya_timer_heap_callback);
+	ENTRY_PRIVATE(obj)->cb = va_arg(*ap, ya_timer_heap_callback *);
 
 	return obj;
 }
