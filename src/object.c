@@ -67,6 +67,7 @@ void ref_obj(void *obj)
 	class_obj->ref ++;
 }
 
+//TODO thread safe
 void unref_obj(void *obj)
 {
 	struct BASE_CLASS_OBJECT *class_obj = (struct BASE_CLASS_OBJECT *)obj;

@@ -75,7 +75,7 @@ void ya_list_insert_after(void *pos, void *node)
 {
     ((ya_list_t*)node)->prev = pos;
     ((ya_list_t*)node)->next = ((ya_list_t*)pos)->next;
-    //barrier();
+    barrier();
     ((ya_list_t*) ((ya_list_t*)pos)->next)->prev = node;
     ((ya_list_t*)pos)->next = node;
 }
@@ -84,7 +84,7 @@ void ya_list_insert_before(void *pos, void *node)
 {
     ((ya_list_t*)node)->prev = ((ya_list_t*)pos)->prev;
     ((ya_list_t*)node)->next = pos;
-    //barrier();
+    barrier();
     ((ya_list_t*) ((ya_list_t*)pos)->prev)->next = node;
     ((ya_list_t*)pos)->prev = node;
 }

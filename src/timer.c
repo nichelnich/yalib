@@ -65,7 +65,7 @@ static unsigned ya_timer_heap_poll (void *this)
 		YA_MUTEX_LOCK(HEAP_PRIVATE(this)->mutex);
 	}
 
-	while ((node = ya_list_get(&HEAP_PRIVATE(this)->entrys, 0))
+	while ((node = ya_list_get(&HEAP_PRIVATE(this)->entrys, 0))  //TODO  better than list data structure
 			&& ya_time_val_cmp(&ENTRY_PRIVATE(node)->_timer_value, &expires) <= 0) {
 		ya_list_erase(node);
 		ENTRY_PRIVATE(node)->heap = NULL;
