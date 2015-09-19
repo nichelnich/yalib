@@ -67,7 +67,9 @@ void ref_obj(void *obj)
 	class_obj->ref ++;
 }
 
-//TODO thread safe
+//TODO thread safe;   ref & unref
+//1.unref的原子操作
+//2.ref时怎么确定obj是否存在
 void unref_obj(void *obj)
 {
 	struct BASE_CLASS_OBJECT *class_obj = (struct BASE_CLASS_OBJECT *)obj;
