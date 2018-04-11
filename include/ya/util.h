@@ -5,6 +5,11 @@
 #ifndef __YA_UTIL_H__
 #define __YA_UTIL_H__
 
+
+#define ROUND_UP(n, align) (((n) + align - 1) & ~(align - 1))
+#define ROUND_DOWN(x, align) ((int)(x) & ~(align - 1))
+#define ALIGNED(x, align) (((int)(x) & (align - 1)) == 0)
+
 void ya_debug_assert(int expression);
 
 #define YA_MUTEX_LOCK(mutex)  ya_pthread_mutex_lock(mutex, __FILE__, __LINE__)
