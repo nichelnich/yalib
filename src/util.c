@@ -10,16 +10,6 @@
 #include "ya/log.h"
 #include "ya/util.h"
 
-/**
- * @brief just use for debug, where associated with process should call assert(2),because crash more safe.
- */
-void ya_debug_assert(int expression) /*boolen*/
-{
-#ifdef DEBUG_ASSERT
-	assert(expression);
-#endif
-}
-
 
 void ya_free(void **ptr)
 {

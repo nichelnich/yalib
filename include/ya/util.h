@@ -10,7 +10,19 @@
 #define ROUND_DOWN(x, align) ((int)(x) & ~(align - 1))
 #define ALIGNED(x, align) (((int)(x) & (align - 1)) == 0)
 
-void ya_debug_assert(int expression);
+
+#if DEBUG_ASSERT
+#define ya_debug_assert(expr)   assert(expr)
+#define YA_ASSERT_RETURN(expr,retval)   ya_debug_assert(expr)   
+#else
+#define ya_debug_assert(expr)
+#define YA_ASSERT_RETURN(expr,retval)    \
+do { \
+    if (!(expr)) { return retval; } \
+} while (0)
+#endif
+
+
 
 #define YA_MUTEX_LOCK(mutex)  ya_pthread_mutex_lock(mutex, __FILE__, __LINE__)
 #define YA_MUTEX_TRYLOCK(mutex)  ya_pthread_mutex_trylock(mutex, __FILE__, __LINE__)
