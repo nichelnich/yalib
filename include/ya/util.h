@@ -5,6 +5,9 @@
 #ifndef __YA_UTIL_H__
 #define __YA_UTIL_H__
 
+#include <time.h>
+#include <sys/time.h>
+
 
 #define ROUND_UP(n, align) (((n) + align - 1) & ~(align - 1))
 #define ROUND_DOWN(x, align) ((int)(x) & ~(align - 1))
@@ -58,5 +61,6 @@ int ya_pthread_mutex_trylock(pthread_mutex_t *mutex, const char *file, int line)
 int ya_pthread_mutex_unlock(pthread_mutex_t *mutex);
 void ya_time_val_normalize(ya_time_val *t);
 int ya_time_val_cmp(ya_time_val *t1, ya_time_val *t2);
+void ya_sleep(time_t sec, suseconds_t usec);
 
 #endif
